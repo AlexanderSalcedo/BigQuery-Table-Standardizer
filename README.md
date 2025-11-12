@@ -15,20 +15,44 @@ Automatización del aplanado y estandarización de tablas `NO ESTRUCTURADAS` en 
 
 ---
 
-## 📂 Estructura del proyecto
+## 🏗️ Arquitectura del proyecto
 
-gcp-bigquery-flattening/ ├── cloud_function/ │   ├── main.py │   ├── requirements.txt │   └── README.md ├── schemas/ │   └── ejemplo_schema.json ├── deploy/ │   └── deploy.sh ├── docs/ │   ├── arquitectura.png │   └── flujo_proceso.md ├── LICENSE ├── .gitignore └── README.md
+![Arquitectura del proyecto](docs/arquitectura.png)
+
+Este proyecto automatiza el proceso de estandarización de datos provenientes de un único proveedor (AUNA), que son almacenados en BigQuery con esquemas complejos tipo `STRUCT`. La arquitectura se compone de los siguientes pasos:
+
+1. **Ingesta de datos estructurados**
+   - Se reciben datos batch en **10 tablas origen** en BigQuery.
+   - Cada tabla contiene información con campos tipo `STRUCT`.
+
+2. **Carga de insumos desde Cloud Shell**
+   - Se cargan dos archivos clave:
+     - `template_auna.json`: define la plantilla de estandarización.
+     - `demo_ocr.zip`: contiene el `main.py` y `requirements.txt` para la Cloud Function.
+
+3. **Ejecución de la Cloud Function**
+   - La función se activa automáticamente al finalizar la ingesta batch.
+   - Lee los datos desde las tablas origen en BigQuery.
+   - Aplana la estructura `STRUCT` según el esquema definido en el JSON.
+   - Escribe los datos estandarizados en **nuevas tablas BigQuery**.
+
+4. **Almacenamiento y trazabilidad**
+   - Los archivos de configuración y código se almacenan en **Google Cloud Storage**.
+   - El proceso completo se ejecuta desde **Google Cloud Shell**, permitiendo despliegue y control centralizado.
 
 ---
 
 ## ⚙️ Despliegue
 
-Usa el siguiente comando para desplegar la Cloud Function desde Google Cloud Shell:
+Comando para desplegar la Cloud Function desde Google Cloud Shell:
 
 ```bash
-gcloud functions deploy flatten_struct \
-  --runtime python310 \
+gcloud functions deploy FUNCTION_NAME \
+  --gen2 \
+  --runtime=python310 \
+  --region=REGION \
+  --source=SOURCE_PATH \
+  --entry-point=process_provider \
   --trigger-http \
-  --entry-point main \
-  --source ./cloud_function \
-  --set-env-vars BUCKET_NAME=tu_bucket,PROJECT_ID=tu_proyecto
+  --service-account=SERVICE_ACCOUNT
+
