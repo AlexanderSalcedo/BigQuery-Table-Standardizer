@@ -1,6 +1,6 @@
 # BQStructFlattener
 
-Automatización del aplanado y estandarización de tablas con estructuras `STRUCT` en BigQuery, utilizando Cloud Functions, Google Cloud Storage y Python. Este proyecto permite transformar tablas complejas en esquemas planos estandarizados de forma automática y escalable.
+Automatización del aplanado y estandarización de tablas `NO ESTRUCTURADAS` en BigQuery, utilizando Cloud Functions, Google Cloud Storage y Python. Este proyecto permite transformar tablas complejas en esquemas planos estandarizados de forma automática y escalable.
 
 ---
 
